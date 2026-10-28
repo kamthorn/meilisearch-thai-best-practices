@@ -1,0 +1,137 @@
+{
+  "_comment": "Production Index Settings for ThaiJO Articles (Multi-locale Nested Schema)",
+  "searchableAttributes": [
+    "titles.th_TH",
+    "titles.en_US",
+    "abstracts.th_TH",
+    "abstracts.en_US",
+    "authors.th_TH",
+    "authors.en_US",
+    "keywords.th_TH",
+    "keywords.en_US",
+    "doi",
+    "journal_path",
+    "journal_name.th_TH",
+    "journal_name.en_US"
+  ],
+  "displayedAttributes": [
+    "*"
+  ],
+  "filterableAttributes": [
+    "id",
+    "journal_id",
+    "category",
+    "languages",
+    "issue_id",
+    "journal_path",
+    "keywords.th_TH",
+    "keywords.en_US",
+    {
+      "attributePatterns": ["year"],
+      "features": {
+        "facetSearch": false,
+        "filter": {
+          "equality": true,
+          "comparison": true
+        }
+      }
+    },
+    {
+      "attributePatterns": ["date_published"],
+      "features": {
+        "facetSearch": false,
+        "filter": {
+          "equality": true,
+          "comparison": true
+        }
+      }
+    }
+  ],
+  "sortableAttributes": [
+    "date_published",
+    "year",
+    "seq"
+  ],
+  "rankingRules": [
+    "words",
+    "exactness",
+    "typo",
+    "proximity",
+    "attribute",
+    "sort"
+  ],
+  "proximityPrecision": "byWord",
+  "stopWords": [
+    "และ",
+    "หรือ",
+    "ใน",
+    "ของ",
+    "เพื่อ",
+    "โดย",
+    "จาก",
+    "กับ",
+    "แก่",
+    "แด่",
+    "ต่อ",
+    "ด้วย",
+    "ซึ่ง",
+    "อัน",
+    "ณ"
+  ],
+  "synonyms": {
+    "โควิด": ["โควิด-19", "โควิด19", "covid-19", "sars-cov-2"],
+    "โควิด-19": ["โควิด", "โควิด19", "covid-19", "sars-cov-2"],
+    "โควิด19": ["โควิด", "โควิด-19", "covid-19", "sars-cov-2"],
+    "covid-19": ["โควิด", "โควิด-19", "โควิด19", "sars-cov-2"],
+    "sars-cov-2": ["โควิด", "โควิด-19", "covid-19"],
+    "ปัญญาประดิษฐ์": ["เอไอ", "artificial intelligence"],
+    "เอไอ": ["ปัญญาประดิษฐ์", "artificial intelligence"],
+    "artificial intelligence": ["ปัญญาประดิษฐ์", "เอไอ"],
+    "อินเทอร์เน็ตของสรรพสิ่ง": ["iot", "internet of things"],
+    "iot": ["อินเทอร์เน็ตของสรรพสิ่ง", "internet of things"],
+    "internet of things": ["อินเทอร์เน็ตของสรรพสิ่ง", "iot"],
+    "ข้อมูลขนาดใหญ่": ["big data"],
+    "big data": ["ข้อมูลขนาดใหญ่"]
+  },
+  "typoTolerance": {
+    "enabled": true,
+    "disableOnAttributes": [
+      "doi",
+      "journal_path"
+    ],
+    "minWordSizeForTypos": {
+      "oneTypo": 6,
+      "twoTypos": 10
+    },
+    "disableOnNumbers": true
+  },
+  "localizedAttributes": [
+    {
+      "locales": ["tha"],
+      "attributePatterns": [
+        "titles.th_TH",
+        "abstracts.th_TH",
+        "authors.th_TH",
+        "keywords.th_TH",
+        "journal_name.th_TH"
+      ]
+    },
+    {
+      "locales": ["eng"],
+      "attributePatterns": [
+        "titles.en_US",
+        "abstracts.en_US",
+        "authors.en_US",
+        "keywords.en_US",
+        "journal_name.en_US"
+      ]
+    }
+  ],
+  "faceting": {
+    "maxValuesPerFacet": 10000
+  },
+  "pagination": {
+    "maxTotalHits": 500000
+  },
+  "searchCutoffMs": 1500
+}

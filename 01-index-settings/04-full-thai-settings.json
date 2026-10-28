@@ -1,0 +1,120 @@
+{
+  "searchableAttributes": [
+    "title_th",
+    "title_en",
+    "abstract_th",
+    "abstract_en",
+    "keywords_th",
+    "keywords_en",
+    "authors",
+    "journal_name",
+    "doi"
+  ],
+  "displayedAttributes": [
+    "*"
+  ],
+  "filterableAttributes": [
+    "id",
+    "category",
+    "journal_path",
+    "languages",
+    "keywords_th",
+    "keywords_en",
+    {
+      "attributePatterns": ["year", "date_published"],
+      "features": {
+        "facetSearch": false,
+        "filter": {
+          "equality": true,
+          "comparison": true
+        }
+      }
+    }
+  ],
+  "sortableAttributes": [
+    "date_published",
+    "year"
+  ],
+  "rankingRules": [
+    "words",
+    "exactness",
+    "typo",
+    "proximity",
+    "attribute",
+    "sort"
+  ],
+  "proximityPrecision": "byWord",
+  "stopWords": [
+    "และ",
+    "หรือ",
+    "ใน",
+    "ของ",
+    "เพื่อ",
+    "โดย",
+    "จาก",
+    "กับ",
+    "แก่",
+    "แด่",
+    "ต่อ",
+    "ด้วย",
+    "ซึ่ง",
+    "อัน",
+    "ณ"
+  ],
+  "synonyms": {
+    "โควิด": ["โควิด-19", "โควิด19", "covid-19", "sars-cov-2"],
+    "โควิด-19": ["โควิด", "โควิด19", "covid-19", "sars-cov-2"],
+    "โควิด19": ["โควิด", "โควิด-19", "covid-19", "sars-cov-2"],
+    "covid-19": ["โควิด", "โควิด-19", "โควิด19", "sars-cov-2"],
+    "sars-cov-2": ["โควิด", "โควิด-19", "covid-19"],
+    "ปัญญาประดิษฐ์": ["เอไอ", "artificial intelligence", "ai"],
+    "เอไอ": ["ปัญญาประดิษฐ์", "artificial intelligence", "ai"],
+    "ai": ["ปัญญาประดิษฐ์", "เอไอ", "artificial intelligence"],
+    "artificial intelligence": ["ปัญญาประดิษฐ์", "เอไอ", "ai"],
+    "อินเทอร์เน็ตของสรรพสิ่ง": ["iot", "internet of things"],
+    "iot": ["อินเทอร์เน็ตของสรรพสิ่ง", "internet of things"],
+    "internet of things": ["อินเทอร์เน็ตของสรรพสิ่ง", "iot"],
+    "ข้อมูลขนาดใหญ่": ["บิ๊กดาต้า", "big data"],
+    "บิ๊กดาต้า": ["ข้อมูลขนาดใหญ่", "big data"],
+    "big data": ["ข้อมูลขนาดใหญ่", "บิ๊กดาต้า"]
+  },
+  "typoTolerance": {
+    "enabled": true,
+    "minWordSizeForTypos": {
+      "oneTypo": 6,
+      "twoTypos": 10
+    },
+    "disableOnNumbers": true,
+    "disableOnAttributes": [
+      "doi",
+      "journal_path"
+    ]
+  },
+  "localizedAttributes": [
+    {
+      "locales": ["tha"],
+      "attributePatterns": [
+        "title_th",
+        "abstract_th",
+        "keywords_th",
+        "authors",
+        "journal_name"
+      ]
+    },
+    {
+      "locales": ["eng"],
+      "attributePatterns": [
+        "title_en",
+        "abstract_en",
+        "keywords_en"
+      ]
+    }
+  ],
+  "faceting": {
+    "maxValuesPerFacet": 10000
+  },
+  "pagination": {
+    "maxTotalHits": 100000
+  },
+  "searchCutoffMs": 1500
+}

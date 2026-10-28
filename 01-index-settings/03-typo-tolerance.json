@@ -1,0 +1,29 @@
+{
+  "_comment": [
+    "Typo Tolerance Best Practices for Thai on Meilisearch",
+    "ทำไมต้องปรับ minWordSizeForTypos จากค่าเริ่มต้น (5 / 9) เป็น (6 / 10):",
+    "1. คำมูลภาษาไทยส่วนใหญ่สั้น (3-5 ตัวอักษร/codepoints เช่น 'การ', 'งาน', 'ดูแล', 'วิจัย', 'กล้อง', 'กลอง')",
+    "2. ในภาษาไทย การเปลี่ยนพยัญชนะหรือวรรณยุกต์เพียง 1 ตัว (1 Edit Distance) มักเปลี่ยนเป็นคนละคำโดยสิ้นเชิง",
+    "   เช่น 'กลอง' <-> 'กล้อง' (5 codepoints), 'ขาว' <-> 'ข้าว' (4 codepoints), 'เสือ' <-> 'เสื้อ' (5 codepoints)",
+    "3. การตั้ง oneTypo = 6 และ twoTypos = 10 ช่วยป้องกัน False Positives บนคำไทยสั้น ๆ",
+    "   แต่ยังยอมให้คำทับศัพท์หรือคำไทยยาว ๆ (เช่น 'คอมพิวเตอร์', 'อิเล็กทรอนิกส์') ทนต่อการพิมพ์ผิดได้",
+    "4. ปิด Typo บนตัวเลข (disableOnNumbers: true) และฟิลด์รหัสเฉพาะ (DOI, ISSN, ORCID, SKU)"
+  ],
+  "typoTolerance": {
+    "enabled": true,
+    "minWordSizeForTypos": {
+      "oneTypo": 6,
+      "twoTypos": 10
+    },
+    "disableOnNumbers": true,
+    "disableOnAttributes": [
+      "doi",
+      "journal_path",
+      "online_issn",
+      "print_issn",
+      "orcid",
+      "sku"
+    ],
+    "disableOnWords": []
+  }
+}

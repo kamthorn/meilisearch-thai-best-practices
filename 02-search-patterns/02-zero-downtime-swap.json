@@ -1,0 +1,15 @@
+{
+  "_comment": [
+    "Zero-Downtime Reindexing via Atomic Index Swapping (POST /swap-indexes)",
+    "เมื่ออัปเกรดพจนานุกรม Charabia หรือเปลี่ยน Index Settings บนระบบ Production (เช่น ThaiJO):",
+    "1. สร้าง Shadow Index ชื่อ 'articles_staging' พร้อมตั้งค่า Settings ชุดใหม่",
+    "2. นำเข้าข้อมูลทั้งหมดเข้า 'articles_staging' และรอจนกว่า Task Queue จะว่าง (status: succeeded)",
+    "3. เรียก POST /swap-indexes เพื่อสลับ 'articles' กับ 'articles_staging' แบบ Atomic (Zero-downtime)",
+    "4. ลบ Index เก่าที่ถูกสลับไปอยู่ใน 'articles_staging'"
+  ],
+  "swap_request_body": [
+    {
+      "indexes": ["articles", "articles_staging"]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+services:
+  meilisearch:
+    # Pre-built multi-arch (linux/amd64, linux/arm64) image with patched Charabia
+    # Branch: kamthorn/charabia@thai-zwsp-and-dict-cleanup
+    image: kamthorn/meilisearch:v1.56.0
+    container_name: meilisearch-thai-demo
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_ENV=development
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey123456789}
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_HTTP_ADDR=0.0.0.0:7700
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 524288
+    volumes:
+      - meili_data:/meili_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  meili_data:

@@ -1,0 +1,30 @@
+{
+  "_comment": [
+    "Two-Stage Query Pattern for Thai Sub-word Search (from ThaiJO Production)",
+    "ทำไมต้องใช้ matchingStrategy: 'all' เป็นค่าเริ่มต้นสำหรับภาษาไทย:",
+    "เมื่อ Charabia ตัดคำแบบ Sub-word เช่น 'การพยาบาลผู้สูงอายุ' -> ['การ', 'พยาบาล', 'ผู้', 'สูง', 'อายุ']",
+    "หากใช้ค่าเริ่มต้นของ Meilisearch ('last') แล้วไม่มีเอกสารที่มีครบทุกคำ ระบบจะตัดคำท้ายออกเรื่อย ๆ",
+    "จนเหลือแค่คำว่า 'การ' เพียงคำเดียว ซึ่งจะคืนเอกสารที่ไม่เกี่ยวข้องออกมาเป็นแสนรายการ!",
+    "",
+    "แนวทางปฏิบัติ:",
+    "Stage 1 (Strict Search): ใช้ matchingStrategy = 'all'",
+    "Stage 2 (Relaxed Fallback เมื่อ Stage 1 ได้ 0 hits): ใช้ matchingStrategy = 'last' คู่กับ rankingScoreThreshold = 0.25"
+  ],
+  "stage1_strict_query": {
+    "q": "การพยาบาลผู้สูงอายุ",
+    "matchingStrategy": "all",
+    "attributesToHighlight": ["title_th", "abstract_th"],
+    "highlightPreTag": "<mark>",
+    "highlightPostTag": "</mark>",
+    "showRankingScore": true
+  },
+  "stage2_fallback_query": {
+    "q": "การพยาบาลผู้สูงอายุ",
+    "matchingStrategy": "last",
+    "rankingScoreThreshold": 0.25,
+    "attributesToHighlight": ["title_th", "abstract_th"],
+    "highlightPreTag": "<mark>",
+    "highlightPostTag": "</mark>",
+    "showRankingScore": true
+  }
+}

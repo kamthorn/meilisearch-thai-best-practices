@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "Hybrid Search (Keyword + Multilingual Semantic Vector Search) in Meilisearch v1.56+",
+    "การผสานการค้นหาด้วยคำสำคัญ (Charabia Sub-word Tokenization) เข้ากับ Multilingual Embedding",
+    "(เช่น BAAI/bge-m3 หรือ paraphrase-multilingual-mpnet-base-v2) ช่วยแก้ปัญหา Vocabulary Mismatch",
+    "เช่น ค้นหาคำว่า 'การรักษาโรคมะเร็งด้วยยา' แล้วเจอบทความเรื่อง 'เคมีบำบัด (Chemotherapy)'"
+  ],
+  "index_embedder_settings": {
+    "embedders": {
+      "thai-multilingual": {
+        "source": "rest",
+        "url": "http://tei-embedding-server:8080/embed",
+        "dimensions": 1024,
+        "documentTemplate": "ชื่อบทความ: {{doc.title_th}} ({{doc.title_en}})\nบทคัดย่อ: {{doc.abstract_th}}"
+      }
+    }
+  },
+  "hybrid_search_query": {
+    "q": "การรักษาโรคมะเร็งด้วยยาและผลข้างเคียง",
+    "matchingStrategy": "all",
+    "hybrid": {
+      "embedder": "thai-multilingual",
+      "semanticRatio": 0.4
+    },
+    "rankingScoreThreshold": 0.3,
+    "showRankingScore": true
+  }
+}

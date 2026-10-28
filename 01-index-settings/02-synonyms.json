@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "Bilingual Thai-English Synonyms for Meilisearch",
+    "เชื่อมโยงคำศัพท์ภาษาไทย คำทับศัพท์ คำย่อ และคำภาษาอังกฤษ",
+    "หมายเหตุ: เนื่องจาก Charabia (thai-zwsp-and-dict-cleanup) ตัดคำประสมยาวเป็น Sub-word เช่น 'ปัญญา' + 'ประดิษฐ์',",
+    "Meilisearch รองรับ Multi-word Synonyms ทั้งฝั่ง Key และ Value โดยอัตโนมัติ"
+  ],
+  "synonyms": {
+    "โควิด": ["โควิด-19", "โควิด19", "covid-19", "sars-cov-2"],
+    "โควิด-19": ["โควิด", "โควิด19", "covid-19", "sars-cov-2"],
+    "โควิด19": ["โควิด", "โควิด-19", "covid-19", "sars-cov-2"],
+    "covid-19": ["โควิด", "โควิด-19", "โควิด19", "sars-cov-2"],
+    "sars-cov-2": ["โควิด", "โควิด-19", "covid-19"],
+    "ปัญญาประดิษฐ์": ["เอไอ", "artificial intelligence", "ai"],
+    "เอไอ": ["ปัญญาประดิษฐ์", "artificial intelligence", "ai"],
+    "ai": ["ปัญญาประดิษฐ์", "เอไอ", "artificial intelligence"],
+    "artificial intelligence": ["ปัญญาประดิษฐ์", "เอไอ", "ai"],
+    "การเรียนรู้ของเครื่อง": ["แมชชีนเลิร์นนิง", "machine learning", "ml"],
+    "แมชชีนเลิร์นนิง": ["การเรียนรู้ของเครื่อง", "machine learning", "ml"],
+    "machine learning": ["การเรียนรู้ของเครื่อง", "แมชชีนเลิร์นนิง", "ml"],
+    "อินเทอร์เน็ตของสรรพสิ่ง": ["iot", "internet of things"],
+    "iot": ["อินเทอร์เน็ตของสรรพสิ่ง", "internet of things"],
+    "internet of things": ["อินเทอร์เน็ตของสรรพสิ่ง", "iot"],
+    "ข้อมูลขนาดใหญ่": ["บิ๊กดาต้า", "big data"],
+    "บิ๊กดาต้า": ["ข้อมูลขนาดใหญ่", "big data"],
+    "big data": ["ข้อมูลขนาดใหญ่", "บิ๊กดาต้า"]
+  }
+}
