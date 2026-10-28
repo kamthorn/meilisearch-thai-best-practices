@@ -2,7 +2,7 @@
   "_comment": [
     "Bilingual Thai-English Synonyms for Meilisearch",
     "เชื่อมโยงคำศัพท์ภาษาไทย คำทับศัพท์ คำย่อ และคำภาษาอังกฤษ",
-    "หมายเหตุ: เนื่องจาก Charabia (thai-zwsp-and-dict-cleanup) ตัดคำประสมยาวเป็น Sub-word เช่น 'ปัญญา' + 'ประดิษฐ์',",
+    "หมายเหตุ: เนื่องจาก Charabia (thai-tcc-engine) ตัดคำประสมยาวเป็น Sub-word เช่น 'ปัญญา' + 'ประดิษฐ์',",
     "Meilisearch รองรับ Multi-word Synonyms ทั้งฝั่ง Key และ Value โดยอัตโนมัติ"
   ],
   "synonyms": {

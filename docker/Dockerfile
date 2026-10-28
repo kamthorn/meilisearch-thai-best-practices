@@ -2,10 +2,10 @@
 # Custom Meilisearch Dockerfile with Enhanced Thai Charabia Tokenizer
 # ==============================================================================
 # Patches Meilisearch v1.56.0 with:
-#   https://github.com/kamthorn/charabia (branch: thai-zwsp-and-dict-cleanup)
+#   https://github.com/kamthorn/charabia (branch: thai-tcc-engine)
 #
 # Key Thai enhancements included:
-#   1. Thai Character Cluster (TCC) + Maximal Matching DP segmentation
+#   1. Thai Character Cluster (TCC) R2 DFA Engine (56-state Moore-reduced DFA)
 #   2. Sub-word / Base Morpheme dictionary (60,937 words, pruned long compounds)
 #   3. Decomposed Sara Am normalization (U+0E4D + tone + U+0E32 -> U+0E33)
 #   4. Zero-Width character filtering (U+200B, U+200C, U+200D, U+FEFF) without breaking words
@@ -19,7 +19,7 @@ FROM rust:1.98.1-alpine3.24 AS builder
 
 ARG MEILISEARCH_TAG=v1.56.0
 ARG CHARABIA_REPO=https://github.com/kamthorn/charabia.git
-ARG CHARABIA_BRANCH=thai-zwsp-and-dict-cleanup
+ARG CHARABIA_BRANCH=thai-tcc-engine
 
 RUN apk add --no-cache \
     git \

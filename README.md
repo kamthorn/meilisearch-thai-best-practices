@@ -1,6 +1,6 @@
 # แนวทางปฏิบัติที่ดีที่สุดสำหรับการค้นหาภาษาไทยด้วย Meilisearch + Charabia (Meilisearch Thai Best Practices)
 
-คลังเก็บโค้ด (Repository) นี้รวบรวมแนวทางปฏิบัติที่ดีที่สุด (Best Practices) สำหรับการนำ **Meilisearch** ร่วมกับตัวตัดคำภาษาไทยรุ่นปรับปรุงพิเศษ **[`kamthorn/charabia` (`thai-zwsp-and-dict-cleanup`)](https://github.com/kamthorn/charabia/tree/thai-zwsp-and-dict-cleanup)** ไปใช้งานจริงในระดับ Production โดยถอดบทเรียนจากการพัฒนาเครื่องยนต์ตัดคำภาษาไทยใน Charabia และการนำไปใช้งานจริงบนระบบฐานข้อมูลวารสารวิชาการอิเล็กทรอนิกส์แห่งประเทศไทย (**ThaiJO — Thai Journals Online**) ที่รองรับบทความวิชาการและเอกสารวิจัยภาษาไทย-อังกฤษจำนวนมาก
+คลังเก็บโค้ด (Repository) นี้รวบรวมแนวทางปฏิบัติที่ดีที่สุด (Best Practices) สำหรับการนำ **Meilisearch** ร่วมกับตัวตัดคำภาษาไทยรุ่นปรับปรุงพิเศษ **[`kamthorn/charabia` (`thai-tcc-engine`)](https://github.com/kamthorn/charabia/tree/thai-tcc-engine)** ไปใช้งานจริงในระดับ Production โดยถอดบทเรียนจากการพัฒนาเครื่องยนต์ตัดคำภาษาไทยด้วยสถาปัตยกรรมสองชั้น (TCC R2 DFA Pre-segmenter + Sub-word Dictionary DP) ใน Charabia และการนำไปใช้งานจริงบนระบบฐานข้อมูลวารสารวิชาการอิเล็กทรอนิกส์แห่งประเทศไทย (**ThaiJO — Thai Journals Online**) ที่รองรับบทความวิชาการและเอกสารวิจัยภาษาไทย-อังกฤษจำนวนมาก
 
 ---
 
@@ -11,8 +11,8 @@
 3. [การเริ่มต้นใช้งานอย่างรวดเร็ว (Quick Start)](#3-การเริ่มต้นใช้งานอย่างรวดเร็ว-quick-start)
    - [3.1 ใช้งานผ่าน Docker Hub (`kamthorn/meilisearch`)](#31-ใช้งานผ่าน-docker-hub-kamthornmeilisearch)
    - [3.2 การ Build Docker Image ด้วยตนเอง (`[patch.crates-io]`)](#32-การ-build-docker-image-ด้วยตนเอง-patchcrates-io)
-4. [เจาะลึกสถาปัตยกรรม Tokenizer & Normalizer ใน `thai-zwsp-and-dict-cleanup`](#4-เจาะลึกสถาปัตยกรรม-tokenizer--normalizer-ใน-thai-zwsp-and-dict-cleanup)
-   - [4.1 Thai Character Cluster (TCC) + Maximal Matching DP](#41-thai-character-cluster-tcc--maximal-matching-dp)
+4. [เจาะลึกสถาปัตยกรรม Tokenizer & Normalizer ใน `thai-tcc-engine`](#4-เจาะลึกสถาปัตยกรรม-tokenizer--normalizer-ใน-thai-tcc-engine)
+   - [4.1 สถาปัตยกรรมสองชั้น: TCC R2 DFA Pre-segmenter + Maximal Matching DP](#41-สถาปัตยกรรมสองชั้น-tcc-r2-dfa-pre-segmenter--maximal-matching-dp)
    - [4.2 ปรัชญาพจนานุกรมแบบ Sub-word / Base Morpheme (60,937 คำ)](#42-ปรัชญาพจนานุกรมแบบ-sub-word--base-morpheme-60937-คำ)
    - [4.3 การทำความสะอาดอักขระขยะจากไฟล์ PDF / MS Word / OJS](#43-การทำความสะอาดอักขระขยะจากไฟล์-pdf--ms-word--ojs)
 5. [การตั้งค่า Index Settings ระดับ Production (ถอดบทเรียนจาก ThaiJO)](#5-การตั้งค่า-index-settings-ระดับ-production-ถอดบทเรียนจาก-thaijo)
@@ -27,7 +27,7 @@
    - [6.2 Zero-Downtime Reindexing ด้วย Atomic Index Swapping](#62-zero-downtime-reindexing-ด้วย-atomic-index-swapping)
    - [6.3 Hybrid Search (Keyword + Multilingual Vector Embedding)](#63-hybrid-search-keyword--multilingual-vector-embedding)
    - [6.4 การตั้งค่า Infrastructure (`ulimits`, `searchCutoffMs`, Batching)](#64-การตั้งค่า-infrastructure-ulimits-searchcutoffms-batching)
-7. [เปรียบเทียบ Meilisearch (`thai-zwsp-and-dict-cleanup`) vs รุ่นมาตรฐาน](#7-เปรียบเทียบ-meilisearch-thai-zwsp-and-dict-cleanup-vs-รุ่นมาตรฐาน)
+7. [เปรียบเทียบ Meilisearch (`thai-tcc-engine`) vs รุ่นมาตรฐาน](#7-เปรียบเทียบ-meilisearch-thai-tcc-engine-vs-รุ่นมาตรฐาน)
 8. [ผลการรันชุดทดสอบอัตโนมัติ (Verification Output)](#8-ผลการรันชุดทดสอบอัตโนมัติ-verification-output)
 
 ---
@@ -52,7 +52,7 @@
 meilisearch-thai-best-practices/
 ├── docker-compose.yml                                 # Docker Compose พร้อมรัน kamthorn/meilisearch:v1.56.0
 ├── docker/
-│   ├── Dockerfile                                     # Multi-stage Dockerfile สำหรับ patch kamthorn/charabia
+│   ├── Dockerfile                                     # Multi-stage Dockerfile สำหรับ patch kamthorn/charabia@thai-tcc-engine
 │   └── build-multiarch.sh                             # สคริปต์ build และ push multi-arch (amd64 + arm64)
 ├── 01-index-settings/
 │   ├── 01-curated-stopwords.json                      # รายการ Stop words ภาษาไทยที่ปลอดภัย (ไม่ทำ Over-filtering)
@@ -75,7 +75,7 @@ meilisearch-thai-best-practices/
 
 ### 3.1 ใช้งานผ่าน Docker Hub (`kamthorn/meilisearch`)
 
-เราได้คอมไพล์อิมเมจ Meilisearch ที่รวมแพตช์ `kamthorn/charabia` (`branch = "thai-zwsp-and-dict-cleanup"`) แบบ Multi-architecture (`linux/amd64` และ `linux/arm64`) ไว้บน Docker Hub เรียบร้อยแล้วที่ **`kamthorn/meilisearch:v1.56.0`** (และ `:latest`):
+เราได้คอมไพล์อิมเมจ Meilisearch ที่รวมแพตช์ `kamthorn/charabia` (`branch = "thai-tcc-engine"`) แบบ Multi-architecture (`linux/amd64` และ `linux/arm64`) ไว้บน Docker Hub เรียบร้อยแล้วที่ **`kamthorn/meilisearch:v1.56.0`** (และ `:latest`):
 
 ```bash
 # 1. รัน Meilisearch ผ่าน Docker Compose
@@ -92,7 +92,7 @@ docker compose up -d
 ```toml
 # ส่วนที่ถูกเติมลงใน Cargo.toml ของ Meilisearch อัตโนมัติขณะ Build
 [patch.crates-io]
-charabia = { git = "https://github.com/kamthorn/charabia.git", branch = "thai-zwsp-and-dict-cleanup" }
+charabia = { git = "https://github.com/kamthorn/charabia.git", branch = "thai-tcc-engine" }
 ```
 
 คำสั่งสำหรับ Build อิมเมจ:
@@ -107,26 +107,43 @@ IMAGE_REPO=docker.io/kamthorn/meilisearch TAG=v1.56.0 ./docker/build-multiarch.s
 
 ---
 
-## 4. เจาะลึกสถาปัตยกรรม Tokenizer & Normalizer ใน `thai-zwsp-and-dict-cleanup`
+## 4. เจาะลึกสถาปัตยกรรม Tokenizer & Normalizer ใน `thai-tcc-engine`
 
-### 4.1 Thai Character Cluster (TCC) + Maximal Matching DP
+### 4.1 สถาปัตยกรรมสองชั้น: TCC R2 DFA Pre-segmenter + Maximal Matching DP
 
-ตัวตัดคำภาษาไทยใน `kamthorn/charabia` ทำงานแบบ 2 ชั้น:
-1. **ระดับอักขระย่อย (Thai Character Cluster — TCC):** จัดกลุ่มพยัญชนะ สระหน้า สระบน/ล่าง วรรณยุกต์ และตัวสะกดที่มีไม้ทัณฑฆาต (`์`) ให้อยู่ในขอบเขตพยางค์ย่อยที่ถูกต้อง เพื่อรับประกันว่าจะไม่มีการหั่นคำกลางสระลอยหรือวรรณยุกต์โดยเด็ดขาด
-2. **ระดับพจนานุกรม (Maximal Matching via Dynamic Programming):** ใช้ Finite State Transducer (`words.fst` ขนาด ~852 KB) ค้นหาเส้นทางการตัดคำที่มีจำนวนคำน้อยที่สุด (ให้น้ำหนักคำในพจนานุกรม = `1`, กลุ่มอักขระนอกพจนานุกรม = `2`) โดยใช้ความเร็วระดับ ~4.3 ไมโครวินาทีต่อประโยค
+การตัดคำภาษาไทยที่ถูกต้องสำหรับ Search Engine ไม่ควรใช้กฎตัดคำหรือพจนานุกรมเดี่ยว ๆ แต่ต้องผสานกันเป็น 2 ชั้นอย่างลงตัว:
+
+```mermaid
+flowchart LR
+    subgraph Charabia_Architecture["สถาปัตยกรรม Charabia (thai-tcc-engine)"]
+        A["ข้อความภาษาไทย<br/>(รวมเคสขยะจาก PDF/Word)"] --> B["1. TCC R2 DFA Engine<br/>(30 classes, 56 states, ~3.4 KB)"]
+        B --> C["ตำแหน่งตัดที่เป็นไปได้<br/>(Valid Boundary Bitset: breakable)"]
+        C --> D["2. FST Word Dictionary<br/>(words.fst 60,937 sub-words)"]
+        D --> E["3. Maximal Matching DP<br/>(Connect Clusters -> Words)"]
+        E --> F["Tokens คำย่อย / คำสมบูรณ์<br/>(Sub-words / Base Morphemes)"]
+    end
+```
+
+1. **ระดับกลุ่มอักขระย่อย (Thai Character Cluster — TCC R2 DFA):**
+   - นำเครื่องยนต์ **TCC R2 DFA** จากโครงการ [`thai-tcc`](https://github.com/kamthorn/thai-tcc) เข้ามาแทนที่ฟังก์ชัน `is_breakable` เดิมของ Charabia
+   - ประกอบด้วยกฎสัทศาสตร์ภาษาไทย 30 ข้อทั่วไป + 2 ข้อ lookahead คอมไพล์เป็น DFA และลดรูปด้วย Moore Partition Refinement เหลือ **56 สถานะ** (ใช้หน่วยความจำเพียง **~3.4 KB**)
+   - ทำหน้าที่เป็น **Pre-segmenter** ที่ปลอดภัยและรวดเร็วระดับ $O(N)$ (~10.2 ns/char) คัดกรองจุดตัดที่เป็นไปไม่ได้ทิ้งไปล่วงหน้าถึง **~50%** (ล็อกสระบน/ล่าง วรรณยุกต์ ตัวการันต์ อักษรควบหน้าสระเอ เช่น `เพลิง`, `เครื่อง` ไม่ให้ฉีกขาด)
+   - ช่วยลดพื้นที่การค้นหาของ Dynamic Programming ใน FST ลง ทำให้ตัดคำเร็วขึ้น **~3.2%**
+2. **ระดับพจนานุกรม (Maximal Matching via Dynamic Programming):**
+   - ตัวค้นหาพจนานุกรม (`words.fst` ขนาด 852 KB) จะวิ่งเชื่อมต่อ (compose) กลุ่ม TCC ย่อย ๆ เข้าด้วยกันจนกลายเป็นคำที่สมบูรณ์ โดยรับประกันว่าขอบเขตของคำจะตกตรงรอยต่อของ TCC เสมอ (`breakable[start + len] == true`)
 
 ### 4.2 ปรัชญาพจนานุกรมแบบ Sub-word / Base Morpheme (60,937 คำ)
 
 พจนานุกรมสำหรับ **Search Engine** ต้องออกแบบต่างจากพจนานุกรมสำหรับงานแปลภาษา (MT/NLP):
 
-| ประเภทคำ | แนวทางใน `thai-zwsp-and-dict-cleanup` | ตัวอย่างการตัดคำ | เหตุผลทางด้าน Search Relevance |
+| ประเภทคำ | แนวทางใน `thai-tcc-engine` | ตัวอย่างการตัดคำ | เหตุผลทางด้าน Search Relevance |
 | :--- | :--- | :--- | :--- |
 | **คำประสมวิชาการ / คำสมาสยาว** | **แยกเป็นคำย่อย (Split)** (คัดออก 157 คำประสมยาวและชื่อหน่วยงาน) | `ปัญญาประดิษฐ์` $\rightarrow$ `["ปัญญา", "ประดิษฐ์"]`<br>`เคมีบำบัด` $\rightarrow$ `["เคมี", "บำบัด"]`<br>`จุลชีววิทยา` $\rightarrow$ `["จุล", "ชีว", "วิทยา"]`<br>`วิศวกรรมซอฟต์แวร์` $\rightarrow$ `["วิศวกรรม", "ซอฟต์แวร์"]` | เพื่อให้ผู้ใช้ที่ค้นหาคำย่อยตัวหลัง เช่น `"ประดิษฐ์"`, `"บำบัด"`, `"ชีววิทยา"`, `"ซอฟต์แวร์"` สามารถค้นเจอบทความได้เสมอ |
 | **คำมูล 2 พยางค์ที่แยกแล้วความหมายเปลี่ยน** | **ห้ามแยก (Preserve as 1 Token)** | `ดูแล` $\rightarrow$ `["ดูแล"]`<br>`ทำงาน` $\rightarrow$ `["ทำงาน"]`<br>`น่ารัก` $\rightarrow$ `["น่ารัก"]`<br>`เข้าใจ` $\rightarrow$ `["เข้าใจ"]` | หากแยก `"ดูแล"` เป็น `"ดู"` + `"แล"` เมื่อเจอประโยค `"คนดีดูแลสุขภาพ"` จะเกิดลำดับโทเคน `["คน", "ดี", "ดู", "แล"]` ทำให้คนค้นคำว่า `"ดีดู"` จับคู่ข้ามขอบคำผิดพลาด (False Positive) |
 
 ### 4.3 การทำความสะอาดอักขระขยะจากไฟล์ PDF / MS Word / OJS
 
-ใน `kamthorn/charabia` (`thai-zwsp-and-dict-cleanup`) การทำ Normalization ทำงานสอดประสานกันตั้งแต่ **ก่อนตัดคำ (Pre-segmentation)**, **ขณะวิ่งหาคำใน FST (`ThaiSegmenter`)**, จนถึง **การปรับรูปโทเคน (`ThaiNormalizer`)** พร้อมรักษา `char_map` สำหรับทำ Highlighting:
+ใน `kamthorn/charabia` (`thai-tcc-engine`) การทำ Normalization ทำงานสอดประสานกันตั้งแต่ **ก่อนตัดคำ (Pre-segmentation)**, **ขณะวิ่งหาคำใน FST (`ThaiSegmenter`)**, จนถึง **การปรับรูปโทเคน (`ThaiNormalizer`)** พร้อมรักษา `char_map` สำหรับทำ Highlighting:
 
 1. **การประกอบร่างสระอำ (Decomposed Sara Am Recomposition):**
    - แปลง `นิคหิต (U+0E4D) + วรรณยุกต์ (U+0E48..U+0E4B) + สระอา (U+0E32)` (เช่น `นํ้า` จากไฟล์ PDF/OJS) และ `สระอำ (U+0E33) + วรรณยุกต์` (พิมพ์วรรณยุกต์หลังสระอำ) ให้เป็นลำดับมาตรฐาน `วรรณยุกต์ + สระอำ (U+0E33)` (`น้ำ`) ทั้งในขณะจับคู่พจนานุกรมและในดัชนีค้นหา
@@ -300,10 +317,11 @@ Meilisearch v1.56 รองรับการค้นหาแบบผสม�
 
 ---
 
-## 7. เปรียบเทียบ Meilisearch (`thai-zwsp-and-dict-cleanup`) vs รุ่นมาตรฐาน
+## 7. เปรียบเทียบ Meilisearch (`thai-tcc-engine`) vs รุ่นมาตรฐาน
 
-| คุณสมบัติ / กรณีทดสอบ | Meilisearch มาตรฐาน (Upstream Charabia) | Meilisearch + `kamthorn/charabia` (`thai-zwsp-and-dict-cleanup`) |
+| คุณสมบัติ / กรณีทดสอบ | Meilisearch มาตรฐาน (Upstream Charabia) | Meilisearch + `kamthorn/charabia` (`thai-tcc-engine`) |
 | :--- | :--- | :--- |
+| **เครื่องยนต์ตัดกลุ่มอักขระ (Cluster Engine)** | กฎเงื่อนไข `is_breakable()` สั้น ๆ ไม่ครอบคลุมสระผสมและอักษรควบ | **TCC R2 DFA Engine (56 สถานะ)** ครอบคลุมกฎภาษาไทย 32 ข้อ และเร็วขึ้น ~3.2% |
 | **ค้นคำย่อยในคำประสมวิชาการ** (เช่น ค้น `"บำบัด"` ใน `"เคมีบำบัด"`, ค้น `"ชีววิทยา"` ใน `"จุลชีววิทยา"`) | ค้นไม่เจอ (ถูกมัดรวมเป็น 1 โทเคนยาว) | **ค้นเจอเสมอ** (ปรับพจนานุกรมตามหลัก Sub-word / Base Morpheme) |
 | **คำมูล 2 พยางค์ที่แยกแล้วเสียความหมาย** (`ดูแล`, `ทำงาน`, `น่ารัก`, `เข้าใจ`) | บางคำถูกแยกทำให้เกิดการจับคู่ข้ามขอบคำผิดพลาด | **คงไว้เป็น 1 โทเคน** ป้องกันปัญหาจับคู่ข้ามคำแบบ `"ดีดู"` ใน `"คนดีดูแล"` |
 | **ข้อความติด Zero-Width (`U+200B`, `U+200C`, `U+FEFF`)** จาก MS Word / PDF (เช่น `"ประ\u{200b}ดิษฐ์"`) | คำขาดกลางเป็น `["ประ", "ดิษฐ์"]` ทำให้ค้น `"ประดิษฐ์"` ไม่เจอ | **ค้นเจอ 100%** (ข้าม Zero-Width ขณะจับคู่พจนานุกรม และกรองออกใน Normalizer) |
@@ -368,6 +386,7 @@ PASS: Stage 2 (matchingStrategy='last' + rankingScoreThreshold=0.25) returns rel
 ## ลิขสิทธิ์และการอ้างอิง (License & References)
 
 - โครงการนี้อนุญาตให้ใช้งานภายใต้สัญญาอนุญาต **Apache License 2.0** (ดูรายละเอียดใน [LICENSE.txt](LICENSE.txt))
-- ซอร์สโค้ดตัวตัดคำภาษาไทย: [`kamthorn/charabia` (`thai-zwsp-and-dict-cleanup`)](https://github.com/kamthorn/charabia/tree/thai-zwsp-and-dict-cleanup)
+- ซอร์สโค้ดตัวตัดคำภาษาไทย: [`kamthorn/charabia` (`thai-tcc-engine`)](https://github.com/kamthorn/charabia/tree/thai-tcc-engine)
+- เครื่องยนต์กลุ่มอักขระไทย TCC: [`kamthorn/thai-tcc`](https://github.com/kamthorn/thai-tcc)
 - Docker Hub Registry: [`kamthorn/meilisearch`](https://hub.docker.com/r/kamthorn/meilisearch)
 - แนวทางคู่ขนานสำหรับ OpenSearch: [`opensearch-thai-best-practices`](https://github.com/kamthorn/opensearch-thai-best-practices)

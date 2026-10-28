@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Meilisearch + Charabia (thai-zwsp-and-dict-cleanup) Verification Suite
+# Meilisearch + Charabia (thai-tcc-engine) Verification Suite
 # ==============================================================================
 # ทดสอบการตั้งค่า 01-index-settings/04-full-thai-settings.json และข้อมูลตัวอย่าง
 # sample-data/articles.json บนอิมเมจ kamthorn/meilisearch:v1.56.0

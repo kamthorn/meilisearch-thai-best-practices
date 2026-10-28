@@ -1,7 +1,7 @@
 services:
   meilisearch:
     # Pre-built multi-arch (linux/amd64, linux/arm64) image with patched Charabia
-    # Branch: kamthorn/charabia@thai-zwsp-and-dict-cleanup
+    # Branch: kamthorn/charabia@thai-tcc-engine
     image: kamthorn/meilisearch:v1.56.0
     container_name: meilisearch-thai-demo
     ports:
